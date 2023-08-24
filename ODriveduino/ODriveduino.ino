@@ -91,7 +91,7 @@ void loop() {
 
         String input = Serial.readStringUntil('\n'); // Lee la entrada hasta encontrar un salto de línea ('\n')
         // Intenta convertir la entrada a un número entero (int)
-        int value = atoi(input.c_str());
+        int value = atof(input.c_str());
         if (value > 0) {
           move_to = value;
           Serial.println("nos movemos");
