@@ -91,10 +91,11 @@ void loop() {
 
         String input = Serial.readStringUntil('\n'); // Lee la entrada hasta encontrar un salto de línea ('\n')
         // Intenta convertir la entrada a un número entero (int)
-        int value = atof(input.c_str());
+        float value = atof(input.c_str());
+        Serial.println(value);
         if (value > 0) {
           move_to = value;
-          Serial.println("nos movemos");
+          Serial.println("nos movemos a");
           state = 2;
         }
       }
