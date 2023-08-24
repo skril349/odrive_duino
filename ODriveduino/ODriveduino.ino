@@ -16,7 +16,7 @@ template<>        inline Print& operator <<(Print &obj, float arg) {
 int motornum;
 int state = 0;
 int test;
-int move_to;
+float move_to;
 // Arduino without spare serial ports (such as Arduino UNO) have to use software serial.
 // Note that this is implemented poorly and can lead to wrong data sent or read.
 // pin 8: RX - connect to ODrive TX
