@@ -17,6 +17,7 @@ int motornum;
 int state = 0;
 int test;
 float move_to;
+float turns;
 // Arduino without spare serial ports (such as Arduino UNO) have to use software serial.
 // Note that this is implemented poorly and can lead to wrong data sent or read.
 // pin 8: RX - connect to ODrive TX
@@ -69,23 +70,22 @@ void setup() {
   Serial << "Axis" << "0" << ": Requesting state " << requested_state << '\n';
   if (!odrive.run_state(motornum, requested_state, false /*don't wait*/)) return;
 
-  delay(15000);
 
-  motornum = '1' - '0';
+  int motornum2 = '1' - '0';
 requested_state = AXIS_STATE_MOTOR_CALIBRATION;
   Serial << "Axis" << "1" << ": Requesting state " << requested_state << '\n';
-  if (!odrive.run_state(motornum, requested_state, true)) return;
+  if (!odrive.run_state(motornum2, requested_state, true)) return;
 
   requested_state = AXIS_STATE_ENCODER_OFFSET_CALIBRATION;
   Serial << "Axis" << "1" << ": Requesting state " << requested_state << '\n';
-  if (!odrive.run_state(motornum, requested_state, true, 25.0f)) return;
+  if (!odrive.run_state(motornum2, requested_state, true, 25.0f)) return;
 
   requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL;
   Serial << "Axis" << "1" << ": Requesting state " << requested_state << '\n';
-  if (!odrive.run_state(motornum, requested_state, false /*don't wait*/)) return;
+  if (!odrive.run_state(motornum2, requested_state, false /*don't wait*/)) return;
   
 
-  Serial.println("presiona 0 si quieres hacer un ensayo de tracción y 1 si quieres uno de twist: ");
+  Serial.println("presiona `t` si quieres hacer un ensayo de tracción y `r` si quieres uno de twist: ");
 
 
 }
@@ -94,7 +94,7 @@ void loop() {
     case 0:
       if (Serial.available()) {
         char c = Serial.read();
-        if (c == '0' || c == '1') {
+        if (c == 't' || c == 'r') {
           test = c;
           Serial.println("introduce el número de vueltas que quieres que de el motor");
           state = 1;
@@ -118,10 +118,12 @@ void loop() {
       break;
 
     case 2:
-      if (test == '1') {
+      if (test == 'r') {
+       Serial.println("Selecciona el numera de vueltas");
+        state = 3;
 
       }
-      if (test == '0') {
+      if (test == 't') {
         Serial.println("moving trajectory");
         odrive_serial << "w axis0.controller.config.input_mode = INPUT_MODE_TRAP_TRAJ" << '\n';
         delay(5);
@@ -129,6 +131,32 @@ void loop() {
         Serial.println("presiona 0 si quieres hacer un ensayo de tracción y 1 si quieres uno de twist: ");
         state = 0;
       }
+      break;
+     case 3:
+      if (Serial.available()>0) {
+
+        String input = Serial.readStringUntil('\n'); // Lee la entrada hasta encontrar un salto de línea ('\n')
+        // Intenta convertir la entrada a un número entero (int)
+        float value = atof(input.c_str());
+        Serial.println(value);
+        if (value >= 0) {
+          turns = value;
+          Serial.println("rotamos a:");
+          state = 4;
+        }
+      }
+      break;
+
+      case 4:
+ Serial.println("moving trajectory");
+        odrive_serial << "w axis0.controller.config.input_mode = INPUT_MODE_TRAP_TRAJ" << '\n';
+        odrive_serial << "w axis1.controller.config.input_mode = INPUT_MODE_TRAP_TRAJ" << '\n';
+        delay(5);
+        odrive_serial << "t 0 " << move_to << '\n';
+        odrive_serial << "t 1 " << turns << '\n';
+
+        Serial.println("presiona 0 si quieres hacer un ensayo de tracción y 1 si quieres uno de twist: ");
+        state = 0;
       break;
     default:
       break;
