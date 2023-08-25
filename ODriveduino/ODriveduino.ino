@@ -69,6 +69,22 @@ void setup() {
   Serial << "Axis" << "0" << ": Requesting state " << requested_state << '\n';
   if (!odrive.run_state(motornum, requested_state, false /*don't wait*/)) return;
 
+  delay(15000);
+
+  motornum = '1' - '0';
+requested_state = AXIS_STATE_MOTOR_CALIBRATION;
+  Serial << "Axis" << "1" << ": Requesting state " << requested_state << '\n';
+  if (!odrive.run_state(motornum, requested_state, true)) return;
+
+  requested_state = AXIS_STATE_ENCODER_OFFSET_CALIBRATION;
+  Serial << "Axis" << "1" << ": Requesting state " << requested_state << '\n';
+  if (!odrive.run_state(motornum, requested_state, true, 25.0f)) return;
+
+  requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL;
+  Serial << "Axis" << "1" << ": Requesting state " << requested_state << '\n';
+  if (!odrive.run_state(motornum, requested_state, false /*don't wait*/)) return;
+  
+
   Serial.println("presiona 0 si quieres hacer un ensayo de tracción y 1 si quieres uno de twist: ");
 
 
