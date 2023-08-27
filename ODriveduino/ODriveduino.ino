@@ -42,16 +42,18 @@ void setup() {
   // In this example we set the same parameters to both motors.
   // You can of course set them different if you want.
   // See the documentation or play around in odrivetool to see the available parameters
-  for (int axis = 0; axis < 2; ++axis) {
-    odrive_serial << "w axis" << axis << ".controller.config.vel_limit " << 100.0f << '\n';
-    odrive_serial << "w axis" << axis << ".motor.config.current_lim " << 30.0f << '\n';
+ odrive_serial << "w axis0.controller.config.vel_limit " << 100.0f << '\n';
+    odrive_serial << "w axis0.motor.config.current_lim " << 30.0f << '\n';
+    odrive_serial << "w axis0.trap_traj.config.accel_lim " << 50.0f << '\n';
+    odrive_serial << "w axis0.trap_traj.config.decel_lim " << 50.0f << '\n';
+    odrive_serial << "w axis0.trap_traj.config.vel_lim " << 100.0f << '\n';
 
-    odrive_serial << "w axis" << axis << ".trap_traj.config.accel_lim " << 50.0f << '\n';
-    odrive_serial << "w axis" << axis << ".trap_traj.config.decel_lim " << 50.0f << '\n';
-    odrive_serial << "w axis" << axis << ".trap_traj.config.vel_lim " << 100.0f << '\n';
+     odrive_serial << "w axis1.controller.config.vel_limit " << 100.0f << '\n';
+    odrive_serial << "w axis1.motor.config.current_lim " << 30.0f << '\n';
 
-    // This ends up writing something like "w axis0.motor.config.current_lim 10.0\n"
-  }
+    odrive_serial << "w axis1.trap_traj.config.accel_lim " << 50.0f << '\n';
+    odrive_serial << "w axis1.trap_traj.config.decel_lim " << 50.0f << '\n';
+    odrive_serial << "w axis1.trap_traj.config.vel_lim " << 100.0f << '\n';
 
   Serial.println("Ready!");
   Serial.println("calibration");
